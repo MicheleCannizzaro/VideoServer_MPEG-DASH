@@ -30,8 +30,22 @@ public class VmsConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/vms/register").permitAll()
+
+                // 1. Post /videos
                 .antMatchers(HttpMethod.POST, "/videos").hasAuthority("USER")
+
+                // 2. Post /videos/:id
+                .antMatchers(HttpMethod.POST, "/videos/{id}").hasAuthority("USER")
+
+                // 3. Get /videos
+                .antMatchers(HttpMethod.GET, "/videos").permitAll()
+
+                // 4. Get /videos/:id
+                .antMatchers(HttpMethod.GET, "/videos/{id}").permitAll()
+
+                // 5. Post /register
+                .antMatchers("/vms/register").permitAll()
+
 
                 .anyRequest().authenticated()
                 .and()

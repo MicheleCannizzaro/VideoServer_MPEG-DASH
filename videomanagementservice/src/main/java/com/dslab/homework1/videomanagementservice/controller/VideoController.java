@@ -24,48 +24,63 @@ public class VideoController {
     @Autowired
     VmsVideoService videoService;
 
-    //POST http://localhost:8080/videos/
+    //1. POST http://localhost:8080/videos/
     @PostMapping(path = "")
     public @ResponseBody Video addVideo (Authentication auth,@RequestBody Video video){
         return videoService.addVideo(auth.getName(),video);
     }
 
-    //GET http://localhost:8080/videos
+    //3. GET http://localhost:8080/videos
     @GetMapping(path="")
     public @ResponseBody Iterable<Video> getVideos (){
         return videoService.getAllVideos();
     }
 
 
-    //POST http://localhost:8080/videos/id
+    //2. POST http://localhost:8080/videos/id
     @PostMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> UploadVideo(Authentication auth, @PathVariable Integer id, @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<String> uploadVideo(Authentication auth, @PathVariable Integer id, @RequestParam("file") MultipartFile file) throws IOException {
 
+         if (videoService.VideoCheckPOST(auth.getName(),id)){
+             //Take a file video.mp4 as input
+             //Save video.mp4 into the storage on path /var/video/id/video.mp4
+             File convertFile = new File("Storage/var/video/"+ id +"/video.mp4");
+             convertFile.createNewFile();
 
-        //Prende in ingresso un file video.mp4
-        File convertFile = new File("/home/michelegrasso/Scrivania/" + file.getOriginalFilename());
-        convertFile.createNewFile();
+             try (FileOutputStream fout = new FileOutputStream(convertFile)){
+                 fout.write(file.getBytes());
+             }
+             catch (Exception exe)
+             {
+                 exe.printStackTrace();
+             }
 
-        try (FileOutputStream fout = new FileOutputStream(convertFile)){
-            fout.write(file.getBytes());
-        }
-        catch (Exception exe)
-        {
-            exe.printStackTrace();
-        }
+            /*//Sends an HTTP REST POST to the vps
+             String command = "curl -X POST \\\n" +
+                     "  http://localhost:8082/videos/process \\\n" +
+                     "  -H 'Content-Type: application/json' \\\n" +
+                     "  -H 'Postman-Token: 4e8f78b6-c87b-44a9-a05b-412034121d74' \\\n" +
+                     "  -H 'cache-control: no-cache' \\\n" +
+                     "  -d '{\"videoId\":"+id+"}'";
 
-
-        if (videoService.VideoCheck(auth.getName(),id)){
-            //Salva il video sullo storage al path /var/video/id/video.mp4
-
-
-
-            //Manda una richiesta REST POST al vps
-
+             Process process = Runtime.getRuntime().exec(command);*/
 
             return new ResponseEntity<>("Video Uploaded", HttpStatus.OK);
         }else{
             return new ResponseEntity<>("Something went wrong!", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+
+    //4. GET http://localhost:8080/videos/id
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<String> getVideo (@PathVariable Integer id) {
+
+        if (videoService.VideoCheckGET(id)){
+            return new ResponseEntity<>("/videofiles/"+id+"/video.mpd", HttpStatus.MOVED_PERMANENTLY);
+        }else{
+            return new ResponseEntity<>("Video doesn't exist!", HttpStatus.NOT_FOUND);
         }
     }
 

@@ -36,17 +36,27 @@ public class VmsVideoService {
         return Vrepository.findAll();
     }
 
-    public boolean VideoCheck (String email,Integer id){
+    public boolean VideoCheckPOST (String email,Integer id){
         if (Vrepository.existsById(id)){
+
             if(Vrepository.findById(id).get().getUser().getEmail().equals(email)){
                 Vrepository.findById(id).get().setState("Uploaded");
                 return true;
             }else{
                 return false;
             }
+
         }else{
             return false;
         }
 
+    }
+
+    public boolean VideoCheckGET (Integer id){
+        if (Vrepository.existsById(id)){
+            return true;
+        }else{
+            return false;
+        }
     }
 }
