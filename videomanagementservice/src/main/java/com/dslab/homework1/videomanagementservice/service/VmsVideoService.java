@@ -38,7 +38,7 @@ public class VmsVideoService {
 
     public boolean VideoCheck (String email,Integer id){
         if (Vrepository.existsById(id)){
-            if(Vrepository.findById(id).get().getUser().getEmail()==email){
+            if(Vrepository.findById(id).get().getUser().getEmail().equals(email)){
                 Vrepository.findById(id).get().setState("Uploaded");
                 return true;
             }else{
