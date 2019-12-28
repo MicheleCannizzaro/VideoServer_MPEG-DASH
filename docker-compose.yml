@@ -1,0 +1,63 @@
+version: '3'
+services:
+        vms:
+#                image: ping-test
+                build: ./videomanagementservice/
+                container_name: vms
+                hostname: vms
+                ports:
+                - "8082:8080"
+                volumes:
+                - vsStorage:/Storage       
+                depends_on:
+                - vsDB
+#                - nginx
+                networks:
+                - apigw
+                - db
+                - vpsnet
+                                    
+        vps:
+#                image: ping-test
+                build: ./videoprocessingservice/
+                container_name: vps
+                hostname: vps
+                ports:
+                - "8083:8080"
+                volumes:
+                - vsStorage:/Storage
+#                depends_on:
+#                - vms
+                networks:
+                - vpsnet
+
+        nginx: 
+                build: ./nginx/
+                container_name: nginx
+                hostname: nginx
+                ports:
+                - "8080:80"
+                volumes:
+                - vsStorage:/Storage
+                networks:
+                - apigw
+
+        vsDB:
+                image: mysql
+                container_name: vsDB
+                hostname: vsDB
+#                ports:
+#                - "3307:3306"
+                env_file:
+                 - ./dbmysql/variables.env
+                networks:
+                - db
+
+volumes:
+        vsStorage:
+#          external: true
+
+networks:
+        apigw:
+        db:
+        vpsnet:
