@@ -65,6 +65,9 @@
     <profiles>
         <profile>
             <id>development</id>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>

@@ -38,10 +38,10 @@ public class VmsVideoService {
 
         if(VideoCheckPOST(user_name,id)){
 
-            File convertFile = new File("/Storage/var/video/" + id + "/video.mp4");
-
             //Create path missing directories
-            convertFile.mkdirs();
+            new File("/Storage/var/video/" + id).mkdirs();
+
+            File convertFile = new File("/Storage/var/video/" + id + "/video.mp4");
 
             if(!convertFile.createNewFile()) {
                 return false;
@@ -54,13 +54,11 @@ public class VmsVideoService {
             }
 
             //Sends an HTTP REST POST to the vps
-             String command = "curl -X POST \\\n" +
-                     "  http://vps:8080/videos/process \\\n" +
-                     "  -H 'Content-Type: application/json' \\\n" +
-                     "  -d '{\"videoId\":"+id+"}'";
+             String command = "curl -X POST http://vps:8080/videos/process -H 'Content-Type: application/json' -d '{\"videoId\":\"2\"}'";
 
              Process process = Runtime.getRuntime().exec(command);
-            return true;
+
+             return true;
         }
         return false;
     }

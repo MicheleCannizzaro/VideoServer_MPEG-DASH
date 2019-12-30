@@ -44,8 +44,10 @@ public class VmsConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/videos/{id}").permitAll()
 
                 // 5. Post /register
-                .antMatchers("/register").permitAll()
+                .antMatchers(HttpMethod.POST,"/register").permitAll()
 
+                // 6. GET /ping
+                .antMatchers("/ping").permitAll()
 
                 .anyRequest().authenticated()
                 .and()

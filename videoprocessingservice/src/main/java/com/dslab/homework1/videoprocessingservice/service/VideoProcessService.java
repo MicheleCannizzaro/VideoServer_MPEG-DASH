@@ -23,7 +23,7 @@ public class VideoProcessService {
 
                 //FFMPEG Bash Script Execution
                 try {
-                    Process process = Runtime.getRuntime().exec("./videoEncoder /Storage/var/video/" + id + "video.mp4 /Storage/var/videofiles/" + id + "/");
+                    Process process = Runtime.getRuntime().exec("./videoEncoder /Storage/var/video/" + id + "/video.mp4 /Storage/var/videofiles/" + id + "/");
 
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -5,13 +5,14 @@ services:
                 build: ./videomanagementservice/
                 container_name: vms
                 hostname: vms
-#                ports:
-#                - "8082:8080"
+                ports:
+                - "8082:8080"
                 volumes:
                 - vsStorage:/Storage       
 #                depends_on:
 #                - vsDB
 #                - nginx
+                command: ["./wait-for-it.sh", "vsDB:3306", "--", "java", "-jar", "service.jar"]
                 networks:
                 - apigw
                 - db
@@ -31,16 +32,16 @@ services:
                 networks:
                 - vpsnet
 
-        nginx: 
-                build: ./nginx/
-                container_name: nginx
-                hostname: nginx
-                ports:
-                - "80:80"
-                volumes:
-                - vsStorage:/Storage
-                networks:
-                - apigw
+#        nginx: 
+#                build: ./nginx/
+#                container_name: nginx
+#                hostname: nginx
+#                ports:
+#                - "80:80"
+#                volumes:
+#                - vsStorage:/Storage
+#                networks:
+#                - apigw
 
         vsDB:
                 image: mysql
@@ -49,7 +50,7 @@ services:
 #                ports:
 #                - "3307:3306"
                 env_file:
-                 - ./dbmysql/variables.env
+                - ./dbmysql/variables.env
                 networks:
                 - db
 

@@ -1,4 +1,4 @@
-package com.dslab.homework1.videomanagementservice.controller;
+package com.dslab.homework1.videoprocessingservice.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
