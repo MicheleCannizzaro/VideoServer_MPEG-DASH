@@ -21,13 +21,13 @@ public class VmsUserService {
         return repository.save(user);
     }
 
-    public Iterable<User> getAllUSers(){
+/*    public Iterable<User> getAllUSers(){
         return repository.findAll();
     }
 
     public User getByEmail(String email){
         return repository.findByEmail(email);
-    }
+    }*/
 
    /* public String deleteUser(String email){
         repository.deleteByEmail(email);

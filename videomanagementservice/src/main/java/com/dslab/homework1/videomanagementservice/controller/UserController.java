@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @Controller
-@RequestMapping(path = "/vms")
+@RequestMapping(path = "/register")
 public class UserController {
 
     @Autowired
     VmsUserService userService;
 
-    //5. POST http://localhost:8080/vms/register
-    @PostMapping(path = "register")
+    //5. POST http://localhost:8080/register
+    @PostMapping(path = "")
     public @ResponseBody User register(@RequestBody User user) {
         return userService.addUser(user);
     }

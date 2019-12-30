@@ -5,11 +5,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 
 @Service
-@Transactional
 public class VideoProcessService {
 
     @Autowired
@@ -17,9 +15,7 @@ public class VideoProcessService {
     @Autowired
     private TaskExecutor taskExecutor;
 
-    public boolean encoding() {
-
-        boolean exit=false;
+    public boolean encode(Integer id){
 
         taskExecutor.execute(new Runnable() {
             @Override
@@ -27,8 +23,7 @@ public class VideoProcessService {
 
                 //FFMPEG Bash Script Execution
                 try {
-                    Process process = Runtime.getRuntime().exec("./videoEncoder video.mp4 Storage/var/videofiles ");
-                    //Sistemare
+                    Process process = Runtime.getRuntime().exec("./videoEncoder /Storage/var/video/" + id + "video.mp4 /Storage/var/videofiles/" + id + "/");
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -36,6 +31,6 @@ public class VideoProcessService {
 
             }
         });
-        return true;  //solo per non avere errori al momento del commit (da modificare!)
+        return true;
     }
 }
