@@ -3,10 +3,17 @@ package com.dslab.homework1.videomanagementservice.service;
 import com.dslab.homework1.videomanagementservice.entity.UserRepository;
 import com.dslab.homework1.videomanagementservice.entity.Video;
 import com.dslab.homework1.videomanagementservice.entity.VideoRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
@@ -15,6 +22,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
+
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 
 @Service
 @Transactional
@@ -54,11 +63,22 @@ public class VmsVideoService {
             }
 
             //Sends an HTTP REST POST to the vps
-             String command = "curl -X POST http://vps:8080/videos/process -H 'Content-Type: application/json' -d '{\"videoId\":\"2\"}'";
+             /*String command = "curl -X POST http://vps:8080/videos/process -H 'Content-Type: application/json' -d '{\"videoId\":\"2\"}'";
+             Process process = Runtime.getRuntime().exec(command);*/
 
-             Process process = Runtime.getRuntime().exec(command);
+            final String vps_uri = "http://vps:8080/videos/process";
 
-             return true;
+            RestTemplate restTemplate = new RestTemplate();
+            org.springframework.http.HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            JSONObject videoRequest = new JSONObject();
+            videoRequest.put("videoId", id);
+
+            HttpEntity<String> request = new HttpEntity<String>(videoRequest.toString(), headers);
+
+            restTemplate.postForObject(vps_uri, request, String.class);
+
+            return true;
         }
         return false;
     }
