@@ -63,8 +63,6 @@ public class VmsVideoService {
             }
 
             //Sends an HTTP REST POST to the vps
-             /*String command = "curl -X POST http://vps:8080/videos/process -H 'Content-Type: application/json' -d '{\"videoId\":\"2\"}'";
-             Process process = Runtime.getRuntime().exec(command);*/
 
             final String vps_uri = "http://vps:8080/videos/process";
 
@@ -77,6 +75,8 @@ public class VmsVideoService {
             HttpEntity<String> request = new HttpEntity<String>(videoRequest.toString(), headers);
 
             restTemplate.postForObject(vps_uri, request, String.class);
+
+            Vrepository.findById(id).get().setState("Uploaded");
 
             return true;
         }
@@ -94,21 +94,19 @@ public class VmsVideoService {
 
     public boolean VideoCheckPOST (String email,Integer id){
         if (Vrepository.existsById(id)){
-
             if(Vrepository.findById(id).get().getUser().getEmail().equals(email)){
-                Vrepository.findById(id).get().setState("Uploaded");
                 return true;
             }else{
                 return false;
             }
-
         }else{
             return false;
         }
     }
 
     public boolean VideoCheckGET (Integer id){
-        if (Vrepository.existsById(id)){
+        File video_f = new File("/Storage/var/videofiles/"+id+"/video.mpd");
+        if (Vrepository.existsById(id) && video_f.exists()){
             return true;
         }else{
             return false;

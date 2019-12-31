@@ -51,6 +51,8 @@ services:
 #                - "3307:3306"
                 env_file:
                 - ./dbmysql/variables.env
+                volumes:
+                - ./dbmysql/data_volume:/var/lib/mysql
                 networks:
                 - db
 

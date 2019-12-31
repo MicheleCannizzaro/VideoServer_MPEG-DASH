@@ -1,0 +1,54 @@
+version: '3'
+services:
+        vms:
+                image: m1c0l/videoserver_vms:v1
+                restart: always
+                container_name: vms
+                hostname: vms
+                volumes:
+                - vsStorage:/Storage       
+                command: ["./wait-for-it.sh", "vsDB:3306", "--", "java", "-jar", "service.jar"]
+                networks:
+                - apigw
+                - db
+                - vpsnet
+                                    
+        vps:
+                image: m1c0l/videoserver_vps:v1
+                restart: always
+                container_name: vps
+                hostname: vps
+                volumes:
+                - vsStorage:/Storage
+                networks:
+                - vpsnet
+
+        nginx: 
+                image: m1c0l/videoserver_apigw:v1
+                restart: always
+                container_name: nginx
+                hostname: nginx
+                ports:
+                - "80:80"
+                volumes:
+                - vsStorage:/Storage
+                networks:
+                - apigw
+
+        vsDB:
+                image: mysql
+                restart: always
+                container_name: vsDB
+                hostname: vsDB
+                env_file:
+                - ./dbmysql/variables.env
+                networks:
+                - db
+
+volumes:
+        vsStorage:
+
+networks:
+        apigw:
+        db:
+        vpsnet:
