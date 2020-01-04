@@ -1,7 +1,6 @@
 version: '3'
 services:
         vms:
-#                image: ping-test
                 build: ./videomanagementservice/
                 container_name: vms
                 hostname: vms
@@ -19,7 +18,6 @@ services:
                 - vpsnet
                                     
         vps:
-#                image: ping-test
                 build: ./videoprocessingservice/
                 container_name: vps
                 hostname: vps
@@ -58,7 +56,6 @@ services:
 
 volumes:
         vsStorage:
-#          external: true
 
 networks:
         apigw:
