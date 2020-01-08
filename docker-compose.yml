@@ -42,7 +42,7 @@ services:
                 - apigw
 
         vsDB:
-                image: mysql
+                image: mysql:5.7
                 container_name: vsDB
                 hostname: vsDB
 #                ports:
@@ -54,8 +54,22 @@ services:
                 networks:
                 - db
 
+        vsDBclient:
+                build: ./mysqlclient/
+                image: videoserver_mpeg-dash_vsdbclient
+                container_name: vsDBclient
+                hostname: vsDBclient
+                command: ["./wait-for-it.sh", "vsDB:3306", "--", "./stats/stats.sh"]
+                volumes:
+                - vsStats:/app/stats/stats_logs
+                networks:
+                - db
+
+
 volumes:
         vsStorage:
+        vsStats:
+
 
 networks:
         apigw:

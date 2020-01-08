@@ -36,7 +36,7 @@ services:
                 - apigw
 
         vsDB:
-                image: mysql
+                image: mysql:5.7
                 restart: always
                 container_name: vsDB
                 hostname: vsDB
@@ -45,8 +45,20 @@ services:
                 networks:
                 - db
 
+        vsDBclient:
+                image: m1c0l/videoserver_mysqlclient:v1
+                container_name: vsDBclient
+                hostname: vsDBclient
+                command: ["./wait-for-it.sh", "vsDB:3306", "--", "./stats/stats.sh"]
+                volumes:
+                - vsStats:/app/stats/stats_logs
+                networks:
+                - db
+
+
 volumes:
         vsStorage:
+        vsStats:
 
 networks:
         apigw:
