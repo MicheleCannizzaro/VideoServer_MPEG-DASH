@@ -1,0 +1,1 @@
+SELECT s1.variable_value / s2.variable_value AS "Queries/Uptime:" FROM performance_schema.global_status s1, performance_schema.global_status s2 WHERE s1.variable_name='queries' AND s2.variable_name ='uptime';

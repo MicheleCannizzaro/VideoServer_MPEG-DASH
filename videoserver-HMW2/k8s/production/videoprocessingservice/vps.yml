@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vps
+  labels:	
+    svc: vps
+spec:
+  ports:
+    - port: 8080
+  selector:
+    app: vps
+---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: vps-service-external
+#spec:
+#  type: LoadBalancer
+#  ports:
+#  - port: 8080
+#  selector:
+#    app: user-service
+#---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vps
+spec:
+  selector:
+    matchLabels:
+      app: vps
+  template:
+    metadata:
+      labels:
+        app: vps
+    spec:
+      containers:
+      - name: vps
+        image: m1c0l/videoserver_vps:v1
+        ports:
+        - containerPort: 8080
+#        envFrom:
+#        - configMapRef:
+#            name: vps-env-file
+        volumeMounts:
+            - mountPath: /Storage
+              name: vs-storage
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 8080
+          initialDelaySeconds: 40
+          periodSeconds: 3
+      volumes:
+      - name: vs-storage
+        hostPath:
+            path: /data/vsStorage
+            type: DirectoryOrCreate
