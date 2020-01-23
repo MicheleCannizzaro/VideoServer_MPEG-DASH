@@ -16,8 +16,7 @@ public class Video {
     @NotNull(message = "The author name parameter must not be blank!")
     private String author_name;
 
-    @NotNull(message = "The state parameter must not be blank!")
-    private String state;
+    private VideoStatus state;
 
     @ManyToOne
     private User user;
@@ -48,11 +47,11 @@ public class Video {
         return this;
     }
 
-    public String getState() {
+    public VideoStatus getState() {
         return state;
     }
 
-    public Video setState(String state) {
+    public Video setState(VideoStatus state) {
         this.state = state;
         return this;
     }

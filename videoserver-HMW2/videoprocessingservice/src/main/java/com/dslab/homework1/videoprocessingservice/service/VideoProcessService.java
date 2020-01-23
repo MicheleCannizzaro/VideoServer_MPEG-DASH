@@ -6,6 +6,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.concurrent.*;
 
 @Service
 public class VideoProcessService {
@@ -15,7 +16,7 @@ public class VideoProcessService {
     @Autowired
     private TaskExecutor taskExecutor;
 
-    public boolean encode(Integer id){
+    public boolean encode(Integer id) {
 
         taskExecutor.execute(new Runnable() {
             @Override
@@ -30,7 +31,9 @@ public class VideoProcessService {
                 }
 
             }
+
         });
+
         return true;
     }
 }

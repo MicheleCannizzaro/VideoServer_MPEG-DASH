@@ -10,18 +10,6 @@ spec:
   selector:
     app: vps
 ---
-#apiVersion: v1
-#kind: Service
-#metadata:
-#  name: vps-service-external
-#spec:
-#  type: LoadBalancer
-#  ports:
-#  - port: 8080
-#  selector:
-#    app: user-service
-#---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,12 +25,12 @@ spec:
     spec:
       containers:
       - name: vps
-        image: m1c0l/videoserver_vps:v1
+        image: m1c0l/videoserver_vps:v2
         ports:
         - containerPort: 8080
-#        envFrom:
-#        - configMapRef:
-#            name: vps-env-file
+        envFrom:
+        - configMapRef:
+            name: vps-env-file
         volumeMounts:
             - mountPath: /Storage
               name: vs-storage

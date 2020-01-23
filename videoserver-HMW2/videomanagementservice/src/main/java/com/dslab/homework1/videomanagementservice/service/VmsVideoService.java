@@ -3,6 +3,7 @@ package com.dslab.homework1.videomanagementservice.service;
 import com.dslab.homework1.videomanagementservice.entity.UserRepository;
 import com.dslab.homework1.videomanagementservice.entity.Video;
 import com.dslab.homework1.videomanagementservice.entity.VideoRepository;
+import com.dslab.homework1.videomanagementservice.entity.VideoStatus;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
@@ -12,6 +13,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,9 +39,18 @@ public class VmsVideoService {
     @Autowired
     UserRepository Urepository;
 
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Value(value="${KAFKA_MAIN_TOPIC}")
+    private String maintopic;
+
+    @Value(value="${VPS_HOST}")
+    private String vps_host;
+
     public Video addVideo(String email, Video video) {
         video.setUser(Urepository.findByEmail(email));
-        video.setState("Not Uploaded");
+        video.setState(VideoStatus.WAITING_UPLOAD);
         return Vrepository.save(video);
     }
 
@@ -64,21 +75,10 @@ public class VmsVideoService {
                 exe.printStackTrace();
             }
 
-            //Sends an HTTP REST POST to the vps
-         // final String vps_uri = "http://"+System.getenv("VPS_HOST")+":8080/videos/process";
-            final String vps_uri = "http://vps:8080/videos/process";
+            //Sends a message to Kafka Queue
+            kafkaTemplate.send(maintopic, "Process|" + id);
 
-            RestTemplate restTemplate = new RestTemplate();
-            org.springframework.http.HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            JSONObject videoRequest = new JSONObject();
-            videoRequest.put("videoId", id);
-
-            HttpEntity<String> request = new HttpEntity<String>(videoRequest.toString(), headers);
-
-            restTemplate.postForObject(vps_uri, request, String.class);
-
-            Vrepository.findById(id).get().setState("Uploaded");
+            Vrepository.findById(id).get().setState(VideoStatus.UPLOADED);
 
             return true;
         }
@@ -96,7 +96,7 @@ public class VmsVideoService {
 
     public boolean VideoCheckPOST (String email,Integer id){
         if (Vrepository.existsById(id)){
-            if(Vrepository.findById(id).get().getUser().getEmail().equals(email)){
+            if(Vrepository.findById(id).get().getUser().getEmail().equals(email) && Vrepository.findById(id).get().getState().equals(VideoStatus.WAITING_UPLOAD)){
                 return true;
             }else{
                 return false;
@@ -108,7 +108,7 @@ public class VmsVideoService {
 
     public boolean VideoCheckGET (Integer id){
         File video_f = new File("/Storage/var/videofiles/"+id+"/video.mpd");
-        if (Vrepository.existsById(id) && video_f.exists()){
+        if (Vrepository.existsById(id) && video_f.exists() && Vrepository.findById(id).get().getState().equals(VideoStatus.AVAILABLE)){
             return true;
         }else{
             return false;

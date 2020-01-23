@@ -18,31 +18,31 @@ while true
 		tstart=$(date +%s%N)
 		cstart=$(cat /sys/fs/cgroup/cpuacct/cpuacct.usage)
 
-		sleep 10
+		sleep 1m
 		echo "--------------------------------------------------------------------------------------------------------------------------------------" >> $FILE_OUTPUT
 		echo "--------------------------------------------------------------------------------------------------------------------------------------" >> $FILE_OUTPUT
 
 		echo -e "\n\t(1) Statistic about: Query type- $(timestamp)" >> $FILE_OUTPUT
 		echo -e "\t" >> $FILE_OUTPUT
-		stat1=$(MYSQL_PWD=password mysql -uroot -h127.0.0.1 -P3306 < /stats/stats1.sql)
+		stat1=$(MYSQL_PWD=$MYSQL_PASSWORD mysql -uroot -h$MYSQL_HOST -P$MYSQL_PORT < /stats/stats1.sql)
 		echo -e "$stat1" >> $FILE_OUTPUT
 
 		echo "--------------------------------------------------------------------------------------------------------------------------------------" >> $FILE_OUTPUT
 		echo -e "\n\t(2) Statistic about: Query Latency - $(timestamp)" >> $FILE_OUTPUT
 		echo -e "\t" >> $FILE_OUTPUT
-		stat2=$(MYSQL_PWD=password mysql -uroot -h127.0.0.1 -P3306 < /stats/stats2.sql)
+		stat2=$(MYSQL_PWD=$MYSQL_PASSWORD mysql -uroot -h$MYSQL_HOST -P$MYSQL_PORT < /stats/stats2.sql)
 		echo "$stat2" >> $FILE_OUTPUT
 
 		echo "--------------------------------------------------------------------------------------------------------------------------------------" >> $FILE_OUTPUT
 		echo -e "\n\t(3) Statistic about: Errors Occurred - $(timestamp)" >> $FILE_OUTPUT 
 		echo -e "\t" >> $FILE_OUTPUT
-		stat3=$(MYSQL_PWD=password mysql -uroot -h127.0.0.1 -P3306 < /stats/stats3.sql)
+		stat3=$(MYSQL_PWD=$MYSQL_PASSWORD mysql -uroot -h$MYSQL_HOST -P$MYSQL_PORT < /stats/stats3.sql)
 		echo "$stat3" >> $FILE_OUTPUT
 
 		echo "--------------------------------------------------------------------------------------------------------------------------------------" >> $FILE_OUTPUT
 		echo -e "\n\t(4) Statistic about: Query per second - $(timestamp)" >> $FILE_OUTPUT  
 		echo -e "\t" >> $FILE_OUTPUT	
-		stat4=$(MYSQL_PWD=password mysql -uroot -h127.0.0.1 -P3306 < /stats/stats4.sql) 
+		stat4=$(MYSQL_PWD=$MYSQL_PASSWORD mysql -uroot -h$MYSQL_HOST -P$MYSQL_PORT < /stats/stats4.sql) 
 		echo "$stat4" >> $FILE_OUTPUT	
 
 		echo "--------------------------------------------------------------------------------------------------------------------------------------" >> $FILE_OUTPUT		
@@ -63,7 +63,7 @@ while true
 		echo -e "\n (6-7) Statistic about: Payload Size input/output  - $(timestamp)" >> $FILE_OUTPUT
 		echo -e "\t" >> $FILE_OUTPUT        
 		echo -e "MB received : \t MB sent :" >> $FILE_OUTPUT
-		MYSQL_PWD=password mysql -N -uroot -h127.0.0.1 -P3306 < /stats/stats6_7.sql | awk '{ORS=" "; byte=$1 /1024/1024; print byte " MB \t"}' >> $FILE_OUTPUT
+		MYSQL_PWD=$MYSQL_PASSWORD mysql -uroot -h$MYSQL_HOST -P$MYSQL_PORT < /stats/stats6_7.sql | awk '{ORS=" "; byte=$1 /1024/1024; print byte " MB \t"}' >> $FILE_OUTPUT
 
 done
 

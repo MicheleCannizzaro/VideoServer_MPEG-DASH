@@ -39,11 +39,23 @@
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <profiles>
         <profile>
             <id>development</id>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
@@ -62,6 +74,9 @@
 
         <profile>
             <id>production</id>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>

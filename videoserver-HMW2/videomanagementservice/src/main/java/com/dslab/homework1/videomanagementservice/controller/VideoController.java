@@ -54,7 +54,7 @@ public class VideoController {
     public ResponseEntity<String> getVideo (@PathVariable Integer id) {
 
         if (videoService.VideoCheckGET(id)){
-            return new ResponseEntity<>("/videofiles/"+id+"/video.mpd", HttpStatus.MOVED_PERMANENTLY);
+            return new ResponseEntity<>("videoserver.localhost/videofiles/"+id+"/master.m3u8", HttpStatus.MOVED_PERMANENTLY);
         }else{
             return new ResponseEntity<>("Video doesn't exist!", HttpStatus.NOT_FOUND);
         }
