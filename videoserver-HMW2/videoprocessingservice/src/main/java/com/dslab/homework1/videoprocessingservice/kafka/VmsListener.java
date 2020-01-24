@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class VmsListener {
@@ -27,17 +29,23 @@ public class VmsListener {
     private String mainTopic;
 
     @KafkaListener(topics="${KAFKA_MAIN_TOPIC}")
-    public void listen(String message) throws IOException {
+    public void listen(String message) throws IOException, InterruptedException, ExecutionException {
         System.out.println("Received message: " + message);
 
         String[] messageParts = message.split("\\|");
 
         if (messageParts[0].equals("Process")) {
-            if(video_process_service.encode(Integer.valueOf(messageParts[1]))){
-                kafkaTemplate.send(mainTopic, "Processed|" + messageParts[1]);
-            }else{
-                kafkaTemplate.send(mainTopic, "ProcessingFailed|" + messageParts[1]);
-            }
+
+            CompletableFuture<Integer> future_exit=video_process_service.encode(Integer.valueOf(messageParts[1])).thenApply(exitCode ->{
+                if (exitCode==0) {
+                    kafkaTemplate.send(mainTopic, "Processed|" + messageParts[1]);
+                }else {
+                    kafkaTemplate.send(mainTopic, "ProcessingFailed|" + messageParts[1]);
+                }
+                return 0;
+            });
+
+            System.out.println(future_exit.get());
         }
     }
 }

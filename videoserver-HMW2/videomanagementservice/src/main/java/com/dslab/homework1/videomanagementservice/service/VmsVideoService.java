@@ -85,11 +85,6 @@ public class VmsVideoService {
         return false;
     }
 
-
-    /*public Optional<Video> getById (Integer id){
-        return Vrepository.findById(id);
-    }*/
-
     public Iterable<Video> getAllVideos(){
         return Vrepository.findAll();
     }
