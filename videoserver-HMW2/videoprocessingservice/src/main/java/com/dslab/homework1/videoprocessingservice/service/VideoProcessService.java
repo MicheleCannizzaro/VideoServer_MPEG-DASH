@@ -1,9 +1,6 @@
 package com.dslab.homework1.videoprocessingservice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -29,16 +26,16 @@ public class VideoProcessService {
         }
     }
 
-    @Async
-    public CompletableFuture<Integer> encode(Integer id) throws IOException, InterruptedException {
+    public Integer encode(String id) throws IOException, InterruptedException {
 
         ProcessBuilder builder = new ProcessBuilder();
-        builder.command("./videoEncoder", "/Storage/var/video/" + id + "/video.mp4", "/Storage/var/videofiles/" + id + "/");
+        builder.redirectErrorStream(true);
+		builder.command("./videoEncoder", "/Storage/var/video/" + id + "/video.mp4", "/Storage/var/videofiles/" + id + "/");
         Process process = builder.start();
         StreamGobbler streamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
         Executors.newSingleThreadExecutor().submit(streamGobbler);
-        int exitCode = process.waitFor();
-
-        return CompletableFuture.completedFuture(exitCode);
+        process.waitFor(15,TimeUnit.MINUTES);
+        process.destroy();
+        return process.waitFor();
     }
 }

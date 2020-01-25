@@ -41,6 +41,9 @@ spec:
             name: vs-db-env-file
         - secretRef:
             name: vs-db-secret-file
+        volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: vs-db-data
         livenessProbe:
           exec:
             command: ["mysqladmin", "ping"]
@@ -76,6 +79,10 @@ spec:
       - name: vs-stats
         hostPath:
             path: /data/vsStats
+            type: DirectoryOrCreate
+      - name: vs-db-data
+        hostPath:
+            path: /data/vsDB
             type: DirectoryOrCreate
 ---
 apiVersion: apps/v1

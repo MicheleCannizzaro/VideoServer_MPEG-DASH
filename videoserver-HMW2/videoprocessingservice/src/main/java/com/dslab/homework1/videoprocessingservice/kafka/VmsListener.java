@@ -36,16 +36,25 @@ public class VmsListener {
 
         if (messageParts[0].equals("Process")) {
 
-            CompletableFuture<Integer> future_exit=video_process_service.encode(Integer.valueOf(messageParts[1])).thenApply(exitCode ->{
-                if (exitCode==0) {
+            CompletableFuture.supplyAsync(() -> {
+                int exitStatus=1;
+                try {
+                    exitStatus=video_process_service.encode(messageParts[1]);
+                } catch (InterruptedException e) {
+                    throw new IllegalStateException(e);
+                } catch (IOException e) {
+                    throw new IllegalStateException(e);
+                }
+                return exitStatus;
+            }).exceptionally(ex -> {kafkaTemplate.send(mainTopic, "ProcessingException|" + messageParts[1]);
+                return null;
+            }).thenAccept(res -> {
+                if (res==0) {
                     kafkaTemplate.send(mainTopic, "Processed|" + messageParts[1]);
                 }else {
                     kafkaTemplate.send(mainTopic, "ProcessingFailed|" + messageParts[1]);
                 }
-                return 0;
             });
-
-            System.out.println(future_exit.get());
         }
     }
 }
