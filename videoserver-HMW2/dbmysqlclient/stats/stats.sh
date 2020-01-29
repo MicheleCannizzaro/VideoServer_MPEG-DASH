@@ -1,48 +1,49 @@
 #!/bin/busybox ash
 
-FILE_OUTPUT=/stats/stats_logs/stats.txt
+var=0
 
 timestamp(){
 date
 }
  
-echo "                 __  __  __   __  ___    ___    _        ___   _____     _     _____   ___ " >> $FILE_OUTPUT
-echo "                |  \/  | \ \ / / / __|  / _ \  | |      / __| |_   _|   /_\   |_   _| / __|" >> $FILE_OUTPUT
-echo "                | |\/| |  \ V /  \__ \ | (_) | | |__    \__ \   | |    / _ \    | |   \__ \\" >> $FILE_OUTPUT
-echo "                |_|  |_|   |_|   |___/  \__\_\ |____|   |___/   |_|   /_/ \_\   |_|   |___/" >> $FILE_OUTPUT
-echo "                                                                                           " >> $FILE_OUTPUT
-
 while true 
   do
-	
+		FILE_OUTPUT=/stats/stats_logs/stats_$var.txt
+		sleep 10s
+		echo "                 __  __  __   __  ___    ___    _        ___   _____     _     _____   ___ " >> $FILE_OUTPUT
+		echo "                |  \/  | \ \ / / / __|  / _ \  | |      / __| |_   _|   /_\   |_   _| / __|" >> $FILE_OUTPUT
+		echo "                | |\/| |  \ V /  \__ \ | (_) | | |__    \__ \   | |    / _ \    | |   \__ \\" >> $FILE_OUTPUT
+		echo "                |_|  |_|   |_|   |___/  \__\_\ |____|   |___/   |_|   /_/ \_\   |_|   |___/" >> $FILE_OUTPUT
+		echo "                                                                                           " >> $FILE_OUTPUT
+
 		tstart=$(date +%s%N)
 		cstart=$(cat /sys/fs/cgroup/cpuacct/cpuacct.usage)
 
-		sleep 1m
+		
 		echo "--------------------------------------------------------------------------------------------------------------------------------------" >> $FILE_OUTPUT
 		echo "--------------------------------------------------------------------------------------------------------------------------------------" >> $FILE_OUTPUT
 
 		echo -e "\n\t(1) Statistic about: Query type- $(timestamp)" >> $FILE_OUTPUT
 		echo -e "\t" >> $FILE_OUTPUT
-		stat1=$(MYSQL_PWD=$MYSQL_PASSWORD mysql -uroot -h$MYSQL_HOST -P$MYSQL_PORT < /stats/stats1.sql)
+		stat1=$(MYSQL_PWD=$MYSQL_ROOT_PASSWORD mysql -uroot -h$MYSQL_HOST -P$MYSQL_PORT < /stats/stats1.sql)
 		echo -e "$stat1" >> $FILE_OUTPUT
 
 		echo "--------------------------------------------------------------------------------------------------------------------------------------" >> $FILE_OUTPUT
 		echo -e "\n\t(2) Statistic about: Query Latency - $(timestamp)" >> $FILE_OUTPUT
 		echo -e "\t" >> $FILE_OUTPUT
-		stat2=$(MYSQL_PWD=$MYSQL_PASSWORD mysql -uroot -h$MYSQL_HOST -P$MYSQL_PORT < /stats/stats2.sql)
+		stat2=$(MYSQL_PWD=$MYSQL_ROOT_PASSWORD mysql -uroot -h$MYSQL_HOST -P$MYSQL_PORT < /stats/stats2.sql)
 		echo "$stat2" >> $FILE_OUTPUT
 
 		echo "--------------------------------------------------------------------------------------------------------------------------------------" >> $FILE_OUTPUT
 		echo -e "\n\t(3) Statistic about: Errors Occurred - $(timestamp)" >> $FILE_OUTPUT 
 		echo -e "\t" >> $FILE_OUTPUT
-		stat3=$(MYSQL_PWD=$MYSQL_PASSWORD mysql -uroot -h$MYSQL_HOST -P$MYSQL_PORT < /stats/stats3.sql)
+		stat3=$(MYSQL_PWD=$MYSQL_ROOT_PASSWORD mysql -uroot -h$MYSQL_HOST -P$MYSQL_PORT < /stats/stats3.sql)
 		echo "$stat3" >> $FILE_OUTPUT
 
 		echo "--------------------------------------------------------------------------------------------------------------------------------------" >> $FILE_OUTPUT
 		echo -e "\n\t(4) Statistic about: Query per second - $(timestamp)" >> $FILE_OUTPUT  
 		echo -e "\t" >> $FILE_OUTPUT	
-		stat4=$(MYSQL_PWD=$MYSQL_PASSWORD mysql -uroot -h$MYSQL_HOST -P$MYSQL_PORT < /stats/stats4.sql) 
+		stat4=$(MYSQL_PWD=$MYSQL_ROOT_PASSWORD mysql -uroot -h$MYSQL_HOST -P$MYSQL_PORT < /stats/stats4.sql) 
 		echo "$stat4" >> $FILE_OUTPUT	
 
 		echo "--------------------------------------------------------------------------------------------------------------------------------------" >> $FILE_OUTPUT		
@@ -63,7 +64,9 @@ while true
 		echo -e "\n (6-7) Statistic about: Payload Size input/output  - $(timestamp)" >> $FILE_OUTPUT
 		echo -e "\t" >> $FILE_OUTPUT        
 		echo -e "MB received : \t MB sent :" >> $FILE_OUTPUT
-		MYSQL_PWD=$MYSQL_PASSWORD mysql -uroot -h$MYSQL_HOST -P$MYSQL_PORT < /stats/stats6_7.sql | awk '{ORS=" "; byte=$1 /1024/1024; print byte " MB \t"}' >> $FILE_OUTPUT
+		MYSQL_PWD=$MYSQL_ROOT_PASSWORD mysql -uroot -h$MYSQL_HOST -P$MYSQL_PORT < /stats/stats6_7.sql | awk '{ORS=" "; byte=$1 /1024/1024; print byte " MB \t"}' >> $FILE_OUTPUT
+		
+		var=$((var+1))
 
 done
 
