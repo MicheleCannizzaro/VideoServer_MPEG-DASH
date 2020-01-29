@@ -10,6 +10,12 @@ kubectl get configmap vs-db-client-env-file -o yaml > videomanagementservice/vs-
 kubectl create configmap vps-env-file --from-env-file=./videoprocessingservice/vps-env-file.properties --save-config
 kubectl get configmap vps-env-file -o yaml > videoprocessingservice/vps-env-file.yml
 
+kubectl create configmap spout-env-file --from-env-file=./spout/spout-env-file.properties --save-config
+kubectl get configmap spout-env-file -o yaml > spout/spout-env-file.yml
+
+kubectl create configmap spin-env-file --from-env-file=./spin/spin-env-file.properties --save-config
+kubectl get configmap spin-env-file -o yaml > spin/spin-env-file.yml
+
 kubectl create secret generic vms-secret-file --from-env-file=./videomanagementservice/vms-secret-file.properties --save-config
 kubectl get secret vms-secret-file -o yaml > videomanagementservice/vms-secret-file.yml
 

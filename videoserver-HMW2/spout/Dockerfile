@@ -1,0 +1,3 @@
+FROM java:8
+WORKDIR /app
+ADD ./target/spout-0.0.1-SNAPSHOT.jar ./service.jar
